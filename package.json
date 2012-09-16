@@ -1,0 +1,10 @@
+{
+    "name" : "nesly", 
+    "description" : "Ever want to program a NES game?", 
+    "tags" : ["nes", "game", "language"], 
+    "version" : "0.0.1", 
+    "author" : "Michael Matuzak <michael@lambdaphant.com>", 
+    "dependencies": { 
+        "jonah": "0.0.1"
+    }
+}
