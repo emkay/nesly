@@ -1,10 +1,32 @@
 {
-    "name" : "nesly", 
-    "description" : "Ever want to program a NES game?", 
-    "tags" : ["nes", "game", "language"], 
-    "version" : "0.0.1", 
-    "author" : "Michael Matuzak <michael@lambdaphant.com>", 
-    "dependencies": { 
-        "jonah": "0.0.1"
-    }
+  "name": "nesly",
+  "version": "0.0.0",
+  "description": "Ever want to program a NES game?",
+  "main": "index.js",
+  "directories": {
+    "example": "examples"
+  },
+  "dependencies": {
+    "jonah": "~0.0.2",
+    "astw": "0.0.0",
+    "escodegen": "0.0.27"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/emkay/nesly.git"
+  },
+  "keywords": [
+    "nes",
+    "game",
+    "language"
+  ],
+  "author": "Michael Matuzak <michael@lambdaphant.com>",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/emkay/nesly/issues"
+  }
 }
