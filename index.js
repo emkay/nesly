@@ -9,6 +9,8 @@ var bank = require('./lib/banking');
 var palette = require('./lib/palettes');
 var sprites = require('./lib/sprites');
 
+var joy = require('./lib/joy');
+
 function reset() {
     var code = [
         'RESET:',
@@ -77,7 +79,9 @@ var prog = [
     '\tJMP Forever',
     'NMI:',
     sprites.setLowHighBytes(),
-    '\tRTI',
+    joy.init(),
+    joy.read('ReadA', sprites.moveRight),
+    joy.read('ReadB', sprites.moveLeft, function () {return 'RTI';}),
     '\t.bank 1',
     '\t.org $E000',
     palette.pData(),
