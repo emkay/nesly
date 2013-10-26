@@ -1,79 +1,77 @@
-var jonah = require('jonah');
+var header = require('./lib/header')({ prg: 1,
+    chr: 0,
+    map: 0,
+    mir: 1
+});
 
-var FUNCTIONS = {},
-    LABEL_N = 0,
-    SYMBOLS = ['write'];
+var bank = require('./lib/banking');
 
-function Compiler() {}
+function reset() {
+    var code = [
+        'RESET:',
+        '\tsei',
+        '\tcld',
+        '\tldx #$40',
+        '\tstx $4017',
+        '\tldx #$FF',
+        '\ttxs',
+        '\tinx',
+        '\tstx $2000',
+        '\tstx $2001',
+        '\tstx $4010'
+    ].join('\n');
 
-function Fn(args, body) {
-    this.args = args;
-    this.body = body;
+    return bank(0, '$C000', code);
 }
 
-Compiler.prototype.compileWrite = function (s) {
-    var nhex = jonah.nesHex(s),
-        label = ['L', LABEL_N].join(''),
-        output = [];
+function vec() {
+    return [
+        '\t.dw NMI',
+        '\t.dw RESET',
+        '\t.dw 0'
+    ].join('\n');
+}
 
-    LABEL_N += 1;
+function vblankwait(n) {
+    return [
+        'vblankwait'+n+':',
+        '\tbit $2002',
+        '\tbpl vblankwait'+n
+    ].join('\n');
+}
 
-    output.push(label + ':');
-    output.push("\t.byte\t" + nhex);
-    output.push('\t.proc   _main: near');
+function clrmem() {
+    return [
+        'clrmem:',
+        '\tlda #$00',
+        '\tsta $0000, x',
+        '\tsta $0100, x',
+        '\tsta $0200, x',
+        '\tsta $0400, x',
+        '\tsta $0500, x',
+        '\tsta $0600, x',
+        '\tsta $0700, x',
+        '\tlda #$FE',
+        '\tsta $0300, x',
+        '\tinx',
+        '\tbne clrmem'
+    ].join('\n');
+}
 
-    output.push('.segment    "CODE"');
+var prog = [
+    header,
+    reset(),
+    vblankwait(1),
+    clrmem(),
+    vblankwait(2),
+    '\tlda %10000000',
+    '\tsta $2001',
+    'Forever:',
+    '\tjmp Forever',
+    'NMI:',
+    '\tRTI',
+    bank(1, '$FFFA', vec())
+    //bank(2, '$0000', '\t.incbin "mario.chr"')
+].join('\n');
 
-    output.push('jsr     _clrscr');
-    output.push('lda     #<('+label+')');
-    output.push('ldx     #>('+label+')');
-    output.push('jsr     pushax');
-    output.push('ldy     #$02');
-    output.push('jsr     _cprintf');
-    output.push('L0006:  jmp     L0006');
-    output.push('rts');
-
-    output.push('.endproc');
-
-    return output.join("\n");
-};
-
-Compiler.prototype.compileHeader = function () {
-    var output = [
-        '.setcpu     "6502"',
-        '.smart      on',
-        '.autoimport on',
-        '.case       on',
-        '.debuginfo  off',
-        '.importzp   sp, sreg, regsave, regbank, tmp1, ptr1, ptr2',
-        '.macpack    longbranch',
-        '.forceimport    __STARTUP__',
-        '.import     _clrscr',
-        '.import     _cprintf',
-        '.export     _main'
-    ];
-
-    return output.join("\n");
-};
-
-Compiler.prototype.compile = function (exp) {
-    var first = exp.shift(),
-        output = '';
-
-    output += this.compileHeader();
-    output += "\n";
-
-    if (SYMBOLS.indexOf(first) !== -1) {
-        if (first === 'write') {
-            var s = exp.shift();
-            output += this.compileWrite(s);
-        }
-    }
-
-    return output;
-};
-
-var prog = ['write', '"Hello World!"'];
-var compiler = new Compiler();
-
-console.log(compiler.compile(prog));
+console.log(prog);
