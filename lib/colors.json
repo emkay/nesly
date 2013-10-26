@@ -1,0 +1,19 @@
+{
+    "gray": "$00",
+    "lightGray": "$10",
+    "lighterGrey": "$20",
+    "white": "$30",
+    "darkBlue": "$01",
+    "lightBlue": "$11",
+    "lighterBlue": "$21",
+    "blue": "$12",
+    "purple": "$03",
+    "lightPurple": "$13",
+    "lighterPurple": "$23",
+    "black": "$0F",
+    "red": "$06",
+    "green": "$1A",
+    "lightGreen": "$2A",
+    "orange": "$26",
+    "yellow": "$38"
+}
