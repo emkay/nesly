@@ -1,10 +1,13 @@
 var header = require('./lib/header')({ prg: 1,
-    chr: 0,
+    chr: 1,
     map: 0,
     mir: 1
 });
 
 var bank = require('./lib/banking');
+
+var palette = require('./lib/palettes');
+var sprites = require('./lib/sprites');
 
 function reset() {
     var code = [
@@ -64,14 +67,24 @@ var prog = [
     vblankwait(1),
     clrmem(),
     vblankwait(2),
-    '\tlda %10000000',
-    '\tsta $2001',
+    palette.palette(),
+    sprites.sprites(),
+    '\tLDA #%10000000',
+    '\tSTA $2000',
+    '\tLDA #%00010000',
+    '\tSTA $2001',
     'Forever:',
-    '\tjmp Forever',
+    '\tJMP Forever',
     'NMI:',
+    sprites.setLowHighBytes(),
     '\tRTI',
-    bank(1, '$FFFA', vec())
-    //bank(2, '$0000', '\t.incbin "mario.chr"')
+    '\t.bank 1',
+    '\t.org $E000',
+    palette.pData(),
+    sprites.sData(),
+    '\t.org $FFFA',
+    vec(),
+    bank(2, '$0000', '\t.incbin "mario.chr"')
 ].join('\n');
 
 console.log(prog);
