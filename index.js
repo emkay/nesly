@@ -97,4 +97,6 @@ var prog = [
     bank(2, '$0000', '\t.incbin "mario.chr"')
 ].join('\n');
 
-console.log(prog);
+module.exports = function () {
+    return prog;
+};

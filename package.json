@@ -3,13 +3,16 @@
   "version": "0.0.0",
   "description": "Ever want to program a NES game?",
   "main": "index.js",
+  "bin": {
+    "nesly": "./bin/nesly"
+  },
   "directories": {
     "example": "examples"
   },
   "dependencies": {
-    "jonah": "~0.0.2",
     "astw": "0.0.0",
-    "escodegen": "0.0.27"
+    "escodegen": "0.0.27",
+    "optimist": "~0.6.0"
   },
   "devDependencies": {},
   "scripts": {
