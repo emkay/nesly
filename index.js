@@ -8,7 +8,7 @@ var bank = require('./lib/banking');
 
 var palette = require('./lib/palettes');
 var sprites = require('./lib/sprites');
-
+var bg = require('./lib/bg.js');
 var joy = require('./lib/joy');
 
 function reset() {
@@ -71,9 +71,11 @@ var prog = [
     vblankwait(2),
     palette.palette(),
     sprites.sprites(),
-    '\tLDA #%10000000',
+    bg.loadBg(),
+    bg.loadAttribute(),
+    '\tLDA #%10010000',
     '\tSTA $2000',
-    '\tLDA #%00010000',
+    '\tLDA #%00011110',
     '\tSTA $2001',
     'Forever:',
     '\tJMP Forever',
@@ -87,11 +89,14 @@ var prog = [
     joy.read('ReadUp', sprites.moveUp),
     joy.read('ReadDown', sprites.moveDown),
     joy.read('ReadLeft', sprites.moveLeft),
-    joy.read('ReadRight', sprites.moveRight, function () {return 'RTI';}),
+    joy.read('ReadRight', sprites.moveRight, bg.enableBg),
+    '\trti',
     '\t.bank 1',
     '\t.org $E000',
     palette.pData(),
     sprites.sData(),
+    bg.loadNametable(),
+    bg.attributeTable(),
     '\t.org $FFFA',
     vec(),
     bank(2, '$0000', '\t.incbin "mario.chr"')
