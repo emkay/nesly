@@ -1,15 +1,10 @@
-var header = require('./lib/header')({ prg: 1,
-    chr: 1,
-    map: 0,
-    mir: 1
-});
+module.exports.header = require('./lib/header');
+module.exports.bank = bank = require('./lib/banking');
 
-var bank = require('./lib/banking');
-
-var palette = require('./lib/palettes');
-var sprites = require('./lib/sprites');
-var bg = require('./lib/bg.js');
-var joy = require('./lib/joy');
+module.exports.palette = require('./lib/palettes');
+module.exports.sprites = require('./lib/sprites');
+module.exports.bg = require('./lib/bg.js');
+module.exports.joy = require('./lib/joy');
 
 function reset() {
     var code = [
@@ -63,45 +58,11 @@ function clrmem() {
     ].join('\n');
 }
 
-var prog = [
-    header,
-    reset(),
-    vblankwait(1),
-    clrmem(),
-    vblankwait(2),
-    palette.palette(),
-    sprites.sprites(),
-    bg.loadBg(),
-    bg.loadAttribute(),
-    '\tLDA #%10010000',
-    '\tSTA $2000',
-    '\tLDA #%00011110',
-    '\tSTA $2001',
-    'Forever:',
-    '\tJMP Forever',
-    'NMI:',
-    sprites.setLowHighBytes(),
-    joy.init(),
-    joy.read('ReadA'),
-    joy.read('ReadB'),
-    joy.read('ReadSel'),
-    joy.read('ReadStart'),
-    joy.read('ReadUp', sprites.moveUp),
-    joy.read('ReadDown', sprites.moveDown),
-    joy.read('ReadLeft', sprites.moveLeft),
-    joy.read('ReadRight', sprites.moveRight, bg.enableBg),
-    '\trti',
-    '\t.bank 1',
-    '\t.org $E000',
-    palette.pData(),
-    sprites.sData(),
-    bg.loadNametable(),
-    bg.attributeTable(),
-    '\t.org $FFFA',
-    vec(),
-    bank(2, '$0000', '\t.incbin "mario.chr"')
-].join('\n');
+module.exports.reset = reset;
+module.exports.vec = vec;
+module.exports.vblankwait = vblankwait;
+module.exports.clrmem = clrmem;
 
-module.exports = function () {
-    return prog;
+module.exports.compile = function (prog) {
+    console.log(prog.join('\n'));
 };
