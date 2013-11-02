@@ -1,68 +1,78 @@
-module.exports.header = require('./lib/header');
-module.exports.bank = bank = require('./lib/banking');
+var fs = require('fs');
+var falafel = require('falafel');
 
-module.exports.palette = require('./lib/palettes');
-module.exports.sprites = require('./lib/sprites');
-module.exports.bg = require('./lib/bg.js');
-module.exports.joy = require('./lib/joy');
+var std = require('./lib/std');
+var header = require('./lib/header');
+var bank = require('./lib/banking');
+var palette = require('./lib/palettes');
+var sprites = require('./lib/sprites');
+var bg = require('./lib/bg.js');
+var joy = require('./lib/joy');
 
-function reset() {
-    var code = [
-        'RESET:',
-        '\tsei',
-        '\tcld',
-        '\tldx #$40',
-        '\tstx $4017',
-        '\tldx #$FF',
-        '\ttxs',
-        '\tinx',
-        '\tstx $2000',
-        '\tstx $2001',
-        '\tstx $4010'
-    ].join('\n');
+var TOKENS = {
+    'reset': std.reset,
+    'vec': std.vec,
+    'vblankwait': std.vblankwait,
+    'clrmem': std.clrmem,
+    'header': header,
+    'bank': bank,
+    'palette': palette.palette,
+    'pData': palette.pData,
+    'loadSprites': sprites.loadSprites,
+    'sData': sprites.sData,
+    'setLowHighBytes': sprites.setLowHighBytes,
+    'moveRight': sprites.moveRight,
+    'moveLeft': sprites.moveLeft,
+    'moveUp': sprites.moveUp,
+    'moveDown': sprites.moveDown,
+    'enableBg': bg.enableBg,
+    'loadAttribute': bg.loadAttribute,
+    'loadBg': bg.loadBg,
+    'attributeTable': bg.attributeTable,
+    'loadNametable': bg.loadNametable,
+    'joyInit': joy.init,
+    'joyRead': joy.read,
+    'asm': function (exp) { return exp; }
+};
 
-    return bank(0, '$C000', code);
-}
+module.exports.compile = function (file) {
 
-function vec() {
-    return [
-        '\t.dw NMI',
-        '\t.dw RESET',
-        '\t.dw 0'
-    ].join('\n');
-}
+    var output = falafel(file, function (node) {
+        var callee;
+        var name;
 
-function vblankwait(n) {
-    return [
-        'vblankwait'+n+':',
-        '\tbit $2002',
-        '\tbpl vblankwait'+n
-    ].join('\n');
-}
+        var fn;
 
-function clrmem() {
-    return [
-        'clrmem:',
-        '\tlda #$00',
-        '\tsta $0000, x',
-        '\tsta $0100, x',
-        '\tsta $0200, x',
-        '\tsta $0400, x',
-        '\tsta $0500, x',
-        '\tsta $0600, x',
-        '\tsta $0700, x',
-        '\tlda #$FE',
-        '\tsta $0300, x',
-        '\tinx',
-        '\tbne clrmem'
-    ].join('\n');
-}
+        var args = [];
+        
+        if (node.type === 'ExpressionStatement') {
+            callee = node.expression.callee;
 
-module.exports.reset = reset;
-module.exports.vec = vec;
-module.exports.vblankwait = vblankwait;
-module.exports.clrmem = clrmem;
+            if (callee && callee.name) {
+                name = callee.name;
+            }
 
-module.exports.compile = function (prog) {
-    console.log(prog.join('\n'));
+            if (name) {
+                fn = TOKENS[name];
+                callee.parent.arguments.forEach(function (arg) {
+                    var value;
+
+                    if (arg.name) {
+                        if (TOKENS[arg.name]) {
+                            value = TOKENS[arg.name];
+                        } 
+                    } else {
+                        value = arg.value;
+                    }
+
+                    args.push(value);
+                });
+
+                if (fn) {
+                    node.update(fn(args));
+                }
+            }
+        }
+    });
+    return output;
 };

@@ -1,15 +1,10 @@
 #!/usr/bin/env node
 
 var nesly = require('../');
-
-var argv = require('optimist')
-    .usage('Compile down to 6502 asm.\nUsage: $0')
-    .demand('f')
-    .alias('f', 'file')
-    .describe('f', 'File to write to')
-    .argv;
-
 var fs = require('fs');
-var s = fs.createWriteStream(argv.file);
 
-s.write(nesly());
+
+var file = fs.readFileSync(process.argv[2], 'utf-8');
+var output = nesly.compile(file);
+
+fs.writeFileSync(process.argv[3], output);
