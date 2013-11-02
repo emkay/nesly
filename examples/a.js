@@ -1,1 +1,46 @@
-write('hello world');
+var nesly = require('../');
+
+var prog = [
+    nesly.header({ prg: 1,
+        chr: 1,
+        map: 0,
+        mir: 1
+    }),
+    nesly.reset(),
+    nesly.vblankwait(1),
+    nesly.clrmem(),
+    nesly.vblankwait(2),
+    nesly.palette.palette(),
+    nesly.sprites.sprites(),
+    nesly.bg.loadBg(),
+    nesly.bg.loadAttribute(),
+    '\tLDA #%10010000',
+    '\tSTA $2000',
+    '\tLDA #%00011110',
+    '\tSTA $2001',
+    'Forever:',
+    '\tJMP Forever',
+    'NMI:',
+    nesly.sprites.setLowHighBytes(),
+    nesly.joy.init(),
+    nesly.joy.read('ReadA'),
+    nesly.joy.read('ReadB'),
+    nesly.joy.read('ReadSel'),
+    nesly.joy.read('ReadStart'),
+    nesly.joy.read('ReadUp', nesly.sprites.moveUp),
+    nesly.joy.read('ReadDown', nesly.sprites.moveDown),
+    nesly.joy.read('ReadLeft', nesly.sprites.moveLeft),
+    nesly.joy.read('ReadRight', nesly.sprites.moveRight, nesly.bg.enableBg),
+    '\trti',
+    '\t.bank 1',
+    '\t.org $E000',
+    nesly.palette.pData(),
+    nesly.sprites.sData(),
+    nesly.bg.loadNametable(),
+    nesly.bg.attributeTable(),
+    '\t.org $FFFA',
+    nesly.vec(),
+    nesly.bank(2, '$0000', '\t.incbin "mario.chr"')
+];
+
+nesly.compile(prog);
