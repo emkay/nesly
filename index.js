@@ -46,7 +46,7 @@ module.exports.compile = function (file) {
 
         var args = [];
         var o;
-        
+
         if (node.type === 'ExpressionStatement') {
             callee = node.expression.callee;
 
