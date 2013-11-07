@@ -1,6 +1,6 @@
 {
   "name": "nesly",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Ever want to program a NES game?",
   "main": "index.js",
   "bin": {
