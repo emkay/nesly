@@ -63,7 +63,14 @@ module.exports.compile = function (file) {
                         value = {};
                         arg.properties.forEach(function (p) {
                             var k = p.key.name;
-                            var v = p.value.value;
+                            var v;
+
+                            if (p.value.type === 'Identifier') {
+                                v = TOKENS[p.value.name];
+                            } else {
+                                v = p.value.value;
+                            }
+
                             value[k] = v;
                             o = value;
                         });

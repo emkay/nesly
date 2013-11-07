@@ -22,14 +22,14 @@ asm('NMI:');
 setLowHighBytes();
  
 joyInit();
-joyRead('ReadA');
-joyRead('ReadB');
-joyRead('ReadSel');
-joyRead('ReadStart');
-joyRead('ReadUp', moveUp);
-joyRead('ReadDown', moveDown);
-joyRead('ReadLeft', moveLeft);
-joyRead('ReadRight', moveRight, enableBg);
+joyRead({label: 'ReadA'});
+joyRead({label: 'ReadB'});
+joyRead({label: 'ReadSel'});
+joyRead({label: 'ReadStart'});
+joyRead({label: 'ReadUp', cb: moveUp});
+joyRead({label: 'ReadDown', cb: moveDown});
+joyRead({label: 'ReadLeft', cb: moveLeft});
+joyRead({label: 'ReadRight', cb: moveRight, done: enableBg});
 
 asm('\trti');
 asm('\t.bank 1');
