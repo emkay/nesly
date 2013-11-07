@@ -3,6 +3,8 @@ nesly
 
 A programming language that compiles down to 6502 NES assembler
 
+[![build status](https://secure.travis-ci.org/emkay/nesly.png)](http://travis-ci.org/emkay/nesly)
+
 ## Install
 `npm i -g nesly`
 
