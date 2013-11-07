@@ -18,3 +18,5 @@ nesly mario-demo.nesly mario-test.s;
 nesasm mario-test.s;
 open mario-test.nes;
 ```
+
+![nesly demo](https://dl.dropboxusercontent.com/u/476602/nesly-demo.png)
