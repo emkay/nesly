@@ -18,6 +18,7 @@ var TOKENS = {
     'bank': bank,
     'palette': palette.palette,
     'pData': palette.pData,
+    'addData': sprites.addData,
     'loadSprites': sprites.loadSprites,
     'sData': sprites.sData,
     'setLowHighBytes': sprites.setLowHighBytes,
@@ -44,6 +45,7 @@ module.exports.compile = function (file) {
         var fn;
 
         var args = [];
+        var o;
         
         if (node.type === 'ExpressionStatement') {
             callee = node.expression.callee;
@@ -57,19 +59,33 @@ module.exports.compile = function (file) {
                 callee.parent.arguments.forEach(function (arg) {
                     var value;
 
-                    if (arg.name) {
-                        if (TOKENS[arg.name]) {
-                            value = TOKENS[arg.name];
-                        } 
+                    if (arg.type === 'ObjectExpression') {
+                        value = {};
+                        arg.properties.forEach(function (p) {
+                            var k = p.key.name;
+                            var v = p.value.value;
+                            value[k] = v;
+                            o = value;
+                        });
                     } else {
-                        value = arg.value;
+                        if (arg.name) {
+                            if (TOKENS[arg.name]) {
+                                value = TOKENS[arg.name];
+                            }
+                        } else {
+                            value = arg.value;
+                        }
+                        args.push(value);
                     }
-
-                    args.push(value);
                 });
 
                 if (fn) {
-                    node.update(fn(args));
+                    if (o) {
+                        node.update(fn(o));
+                        delete o;
+                    } else {
+                        node.update(fn(args));
+                    }
                 }
             }
         }
