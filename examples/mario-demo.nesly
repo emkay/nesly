@@ -1,4 +1,4 @@
-header(1, 1, 0, 1);
+header({prg: 1, chr: 1, map: 0, mir: 1});
 
 reset();
 vblankwait(1);
