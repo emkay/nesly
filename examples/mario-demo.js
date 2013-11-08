@@ -37,10 +37,10 @@ asm('\t.org $E000');
 
 pData();
 
-addData({x: '80', y: '80', tile: '32', attr: '00'});
-addData({x: '88', y: '80', tile: '33', attr: '00'});
-addData({x: '80', y: '88', tile: '34', attr: '00'});
-addData({x: '88', y: '88', tile: '35', attr: '00'});
+addData({x: '80', y: '80', tile: '112', attr: '0'});
+addData({x: '88', y: '80', tile: '113', attr: '0'});
+addData({x: '80', y: '88', tile: '114', attr: '0'});
+addData({x: '88', y: '88', tile: '115', attr: '0'});
 sData();
 
 loadNametable();
