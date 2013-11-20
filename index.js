@@ -29,6 +29,7 @@ var TOKENS = {
     'enableBg': bg.enableBg,
     'loadAttribute': bg.loadAttribute,
     'loadBg': bg.loadBg,
+    'write': bg.write,
     'attributeTable': bg.attributeTable,
     'loadNametable': bg.loadNametable,
     'joyInit': joy.init,
