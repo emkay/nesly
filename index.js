@@ -28,6 +28,7 @@ var TOKENS = {
     'moveDown': sprites.moveDown,
     'enableBg': bg.enableBg,
     'loadAttribute': bg.loadAttribute,
+    'addBg': bg.addBgRow,
     'loadBg': bg.loadBg,
     'write': bg.write,
     'attributeTable': bg.attributeTable,
