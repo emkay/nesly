@@ -38,66 +38,74 @@ var TOKENS = {
     'asm': function (exp) { return exp; }
 };
 
-module.exports.compile = function (file) {
+function expressionStatement(node) {
+    var callee = node.expression.callee;
+    var args = [];
+    var name;
+    var fn;
+    var o;
 
-    var output = falafel(file, function (node) {
-        var callee;
-        var name;
+    var argumentFn = function (arg) {
+        var value;
 
-        var fn;
+        if (arg.type === 'ObjectExpression') {
+            value = {};
+            arg.properties.forEach(function (p) {
+                var k = p.key.name;
+                var v;
 
-        var args = [];
-        var o;
-
-        if (node.type === 'ExpressionStatement') {
-            callee = node.expression.callee;
-
-            if (callee && callee.name) {
-                name = callee.name;
-            }
-
-            if (name) {
-                fn = TOKENS[name];
-                callee.parent.arguments.forEach(function (arg) {
-                    var value;
-
-                    if (arg.type === 'ObjectExpression') {
-                        value = {};
-                        arg.properties.forEach(function (p) {
-                            var k = p.key.name;
-                            var v;
-
-                            if (p.value.type === 'Identifier') {
-                                v = TOKENS[p.value.name];
-                            } else {
-                                v = p.value.value;
-                            }
-
-                            value[k] = v;
-                            o = value;
-                        });
-                    } else {
-                        if (arg.name) {
-                            if (TOKENS[arg.name]) {
-                                value = TOKENS[arg.name];
-                            }
-                        } else {
-                            value = arg.value;
-                        }
-                        args.push(value);
-                    }
-                });
-
-                if (fn) {
-                    if (o) {
-                        node.update(fn(o));
-                        delete o;
-                    } else {
-                        node.update(fn(args));
-                    }
+                if (p.value.type === 'Identifier') {
+                    v = TOKENS[p.value.name];
+                } else {
+                    v = p.value.value;
                 }
+
+                value[k] = v;
+                o = value;
+            });
+        } else {
+            if (arg.name) {
+                if (TOKENS[arg.name]) {
+                    value = TOKENS[arg.name];
+                }
+            } else {
+                value = arg.value;
+            }
+            args.push(value);
+        }
+    };
+
+    if (callee && callee.name) {
+        name = callee.name;
+    }
+
+    if (name) {
+        fn = TOKENS[name];
+        callee.parent.arguments.forEach(argumentFn);
+
+        if (fn) {
+            if (o) {
+                node.update(fn(o));
+                delete o;
+            } else {
+                node.update(fn(args));
             }
         }
-    });
+    }
+}
+
+var TYPES = {
+    'ExpressionStatement': expressionStatement
+};
+
+
+function compiler(node) {
+    if (TYPES[node.type]) {
+        TYPES[node.type](node);
+    }
+}
+
+module.exports.compile = function (file) {
+    var output = falafel(file, compiler);
     return output;
 };
