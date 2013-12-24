@@ -94,8 +94,34 @@ function expressionStatement(node) {
     }
 }
 
+function variableDeclarator(node) {
+    var name = node && node.id && node.id.name;
+    var value = node && node.init && node.init.value;
+    var label = 'var_'+name+':\t';
+
+    var updatedValue;
+
+    switch (value) {
+        case true:
+            updatedValue = 1;
+        break;
+        case false:
+            updatedValue = 0;
+        break;
+        default:
+            updatedValue = value;
+    }
+
+    if (node.parent && node.parent.kind === 'var') {
+        node.parent.update('');
+    }
+
+    node.update(label + '.db\t' + updatedValue);
+}
+
 var TYPES = {
-    'ExpressionStatement': expressionStatement
+    'ExpressionStatement': expressionStatement,
+    'VariableDeclarator': variableDeclarator
 };
 
 
